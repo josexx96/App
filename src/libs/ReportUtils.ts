@@ -2485,7 +2485,7 @@ function buildParticipantsFromAccountIDs(accountIDs: number[]): Participants {
 function getGroupChatName(participants?: SelectedParticipant[], shouldApplyLimit = false, report?: OnyxEntry<Report>): string | undefined {
     // If we have a report always try to get the name from the report.
     if (report?.reportName) {
-        return report.reportName;
+        return getFormattedReportName(report.reportName);
     }
 
     const reportMetadata = getReportMetadata(report?.reportID);
@@ -2599,7 +2599,7 @@ function getIcons(
     }
     if (isDomainRoom(report)) {
         // Get domain name after the #. Domain Rooms use our default workspace avatar pattern.
-        const domainName = report?.reportName?.substring(1);
+        const domainName = getFormattedReportName(report?.reportName).substring(1);
         const policyExpenseChatAvatarSource = getDefaultWorkspaceAvatar(domainName);
         const domainIcon: Icon = {
             source: policyExpenseChatAvatarSource,
@@ -3120,7 +3120,7 @@ function getPolicyExpenseChatName(report: OnyxEntry<Report>, policy?: OnyxEntry<
     const personalDetails = ownerAccountID ? allPersonalDetails?.[ownerAccountID] : undefined;
     const login = personalDetails ? personalDetails.login : null;
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    const reportOwnerDisplayName = getDisplayNameForParticipant(ownerAccountID) || login || report?.reportName;
+    const reportOwnerDisplayName = getDisplayNameForParticipant(ownerAccountID) || login || getFormattedReportName(report?.reportName);
 
     // If the policy expense chat is owned by this user, use the name of the policy as the report name.
     if (report?.isOwnPolicyExpenseChat) {
@@ -3274,7 +3274,7 @@ function getMoneyRequestReportName(report: OnyxEntry<Report>, policy?: OnyxEntry
     const titleReportField = Object.values(reportFields ?? {}).find((reportField) => reportField?.fieldID === CONST.REPORT_FIELD_TITLE_FIELD_ID);
 
     if (titleReportField && report?.reportName && isPaidGroupPolicyExpenseReport(report)) {
-        return report.reportName;
+        return getFormattedReportName(report.reportName);
     }
 
     const moneyRequestTotal = getMoneyRequestSpendBreakdown(report).totalDisplaySpend;
@@ -4284,7 +4284,7 @@ function getReportName(
             return formatReportLastMessageText(modifiedMessage);
         }
         if (isTripRoom(report)) {
-            return report?.reportName ?? '';
+            return getFormattedReportName(report?.reportName) ?? '';
         }
 
         if (isCardIssuedAction(parentReportAction)) {
@@ -4306,7 +4306,7 @@ function getReportName(
     }
 
     if (isChatRoom(report) || isTaskReport(report)) {
-        formattedName = report?.reportName;
+        formattedName = getFormattedReportName(report?.reportName);
     }
 
     if (isPolicyExpenseChat(report)) {
@@ -4318,7 +4318,7 @@ function getReportName(
     }
 
     if (isInvoiceReport(report)) {
-        formattedName = report?.reportName ?? getMoneyRequestReportName(report, policy, invoiceReceiverPolicy);
+        formattedName = getFormattedReportName(report?.reportName) ?? getMoneyRequestReportName(report, policy, invoiceReceiverPolicy);
     }
 
     if (isInvoiceRoom(report)) {
@@ -4390,7 +4390,7 @@ function getChatRoomSubtitle(report: OnyxEntry<Report>): string | undefined {
     }
     if (getChatType(report) === CONST.REPORT.CHAT_TYPE.DOMAIN_ALL) {
         // The domainAll rooms are just #domainName, so we ignore the prefix '#' to get the domainName
-        return report?.reportName?.substring(1) ?? '';
+        return getFormattedReportName(report?.reportName).substring(1) ?? '';
     }
     if ((isPolicyExpenseChat(report) && !!report?.isOwnPolicyExpenseChat) || isExpenseReport(report)) {
         return translateLocal('workspace.common.workspace');

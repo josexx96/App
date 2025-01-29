@@ -8879,6 +8879,14 @@ function getReportMetadata(reportID: string | undefined) {
     return reportID ? allReportMetadataKeyValue[reportID] : undefined;
 }
 
+function getFormattedReportName(reportName?: string | {text: string; html: string;}, asHTML: boolean = false): string {
+    if (Str.isString(reportName)) {
+        return reportName;
+    }
+
+    return asHTML ? reportName?.html ?? '' : reportName?.text ?? '';
+}
+
 export {
     addDomainToShortMention,
     completeShortMention,
@@ -8972,6 +8980,7 @@ export {
     getDeletedParentActionMessageForChatReport,
     getDisplayNameForParticipant,
     getDisplayNamesWithTooltips,
+    getFormattedReportName,
     getGroupChatName,
     getIOUReportActionDisplayMessage,
     getIOUReportActionMessage,
